@@ -23,10 +23,10 @@ connectDB();
 
 app.get('/', (req, res) => res.send('Welcome!'));
 
-app.get('/todos', async (req, res) =>{
-    const todos = await Todo.find({});
-    res.status(200).json(todos);
-});
+// app.get('/todos', async (req, res) =>{
+//     const todos = await Todo.find({});
+//     res.status(200).json(todos);
+// });
 
 app.get('/todos/completed', async (req, res, next) =>{
     try{
@@ -36,6 +36,19 @@ app.get('/todos/completed', async (req, res, next) =>{
     catch (error){
         next(error);
     }
+});
+
+app.get('/todos', async (req, res, next) => {
+  try {
+    const { completed } = req.query;
+
+    const filter = completed === undefined ? {} : { completed: completed === 'true' };
+
+    const todos = await Todo.find(filter);
+    res.status(200).json(todos);
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.get('/todos/:id', async (req, res, next) =>{
